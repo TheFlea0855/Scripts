@@ -60,6 +60,7 @@ end
 
 API.Write_LoopyLoop(true)
 while (API.Read_LoopyLoop()) do
+    API.DoRandomEvents()
     if hasUnfired() then
         API.RandomSleep2(1000,100,600)
         if API.isAbilityAvailable("Fire Urn") then
