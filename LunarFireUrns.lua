@@ -4,7 +4,7 @@ local API = require("api")
     Name: Lunar Fire Urns
     Description: Fires Urns using the lunar spell book. 
     Author: The Flea
-    Version: 1.0
+    Version: 1.1
     INSTRUCTIONS: Have the last loaded preset containing unfired urns, and a rune pouch with required runes equipped. 
                   Set the BANK ID (Line 13) unfired urn ID (Line 14) 
                   Ensure Fire Urn is on the ability bar
@@ -50,6 +50,7 @@ local function loadLastPreset()
     end
 end
 
+local failedattempts = 0
 API.Write_LoopyLoop(true)
 while (API.Read_LoopyLoop()) do
     API.DoRandomEvents()
@@ -66,6 +67,14 @@ while (API.Read_LoopyLoop()) do
             end
         end
     else
-        loadLastPreset()    
+        loadLastPreset()
+        if not hasUnfired() then
+            failedattempts = failedattempts + 1
+            API.RandomSleep2(1000,400,1000)             
+        end
+        if failedattempts == 3 then
+            print("Failed to find unfired urns 3 times. Stopping script.")
+            API.Write_LoopyLoop(false)
+        end    
     end
 end
