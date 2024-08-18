@@ -27,14 +27,6 @@ local function craftingInterfaceOpen()
     return API.VB_FindPSett(2874, 1, 0).state == 1310738 or 40
 end
 
-local function waitUntil(x, timeout)
-    local start = os.time()
-    while not x() and start + timeout > os.time() do
-        API.RandomSleep2(300, 100, 200)
-    end
-    return start + timeout > os.time()
-end
-
 local function nearBank()
     local objList = {bankID}
     local checkRange = 10
