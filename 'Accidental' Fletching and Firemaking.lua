@@ -7,7 +7,6 @@ If using dive & surge make sure they're on your action bar somewhere!
 
 local API = require("api")
 local GUI = require("gui")
-local task = "Eggsperimentation" -- Seggregation / Eggsperimentation / Carestyling
 local inventoryKey = 0x70 -- F1 SET HOTKEY FOR OPEN INV https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 
 -- objects
