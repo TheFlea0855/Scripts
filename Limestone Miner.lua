@@ -82,24 +82,6 @@ end
 local trips = 0
 local stone = 0
 
-local function halloweenStuff()
-    if Inventory:Contains(57605)  then -- double token
-        API.DoAction_Inventory1(57605,0,2,API.OFF_ACT_GeneralInterface_route)
-    end
-    if Inventory:Contains(57604)  then -- triple token
-        API.DoAction_Inventory1(57604,0,2,API.OFF_ACT_GeneralInterface_route)
-    end
-    if Inventory:Contains(57591)  then -- clan confections
-        if API.DoAction_Inventory1(57591,0,8,API.OFF_ACT_GeneralInterface_route2) then
-            if API.VB_FindPSett(2874, 1).state == 28 then
-                API.KeyboardPress("y")
-                API.RandomSleep2(600,600,1200)
-            end
-        end
-    end
-end
-
-
 API.SetDrawTrackedSkills(true)
 API.SetDrawLogs(true)
 API.Write_LoopyLoop(true)
