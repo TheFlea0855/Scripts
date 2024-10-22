@@ -104,8 +104,6 @@ while (API.Read_LoopyLoop()) do
     API.DrawTable(metrics)
     API.DoRandomEvents()
     idleCheck()
-    halloweenStuff()
-
     openInventory()
     if API.PInAreaW(limestoneMine, 8) and Inventory:FreeSpaces() >= 1 then
         mineLimestone()
