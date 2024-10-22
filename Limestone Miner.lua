@@ -4,7 +4,6 @@ local API = require('api')
 local UTILS = require("utils")
 local CreationInterface = require("CreationInterface")
 
-
 local inventoryKey = 0x70 -- F1 SET HOTKEY FOR OPEN INV https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 -- Areas 
 local limestoneMine = WPOINT.new(3375, 3500, 0)
@@ -12,7 +11,6 @@ local depositBox = WPOINT.new(3361, 3480, 0 )
 
 -- Objects
 local depositBoxID = 90261 
-
 
 local function mineLimestone()
     local hoverProgress = API.LocalPlayer_HoverProgress()
