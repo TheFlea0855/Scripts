@@ -8,6 +8,7 @@ API.SetDrawTrackedSkills(true)
 
 local fungusDropKey = 0x36 -- key 6
 local enrichedDropKey = 0x37 -- key 7
+local extremePots = { 44131, 44129, 44127, 44125 }
 
 local enrichedGuards = {
     guard1 = 28418,
@@ -113,9 +114,22 @@ local function harvestGuard()
         API.DoAction_NPC(0xa7, API.OFF_ACT_InteractNPC_route, {enrichedGuards.guard1, enrichedGuards.guard2, enrichedGuards.guard3, enrichedGuards.guard4}, 50)
         API.RandomSleep2(5000, 600, 3000)
     elseif findNonEnrich() then
-        print("No Enriched. Harvesting Normal 1")
+        print("No Enriched. Harvesting Normal")
         API.DoAction_NPC(0xa7, API.OFF_ACT_InteractNPC_route, {normalGuards.guard1, normalGuards.guard2, normalGuards.guard3, normalGuards.guard4}, 50)
         API.RandomSleep2(5000, 600, 3000)
+    end
+end
+
+local function verifyHunterPot()
+    if not API.Buffbar_GetIDstatus(44127).found then
+        for _, pot in ipairs(extremePots) do
+            if API.InvItemcount_1(pot) > 0 then
+                print("Drinking Extreme Hunter Pot!")
+                API.DoAction_Inventory1(pot, 0, 1, API.OFF_ACT_GeneralInterface_route)
+                break
+            end
+        end
+        UTILS.countTicks(math.random(1,3))
     end
 end
 
@@ -125,6 +139,7 @@ while (API.Read_LoopyLoop()) do
     UTILS:gameStateChecks()
     idleCheck()
     applyBoosts()
+    verifyHunterPot()
     if API.InvFull_() then
         API.RandomSleep2(2000, 100, 2000)
         dropFungus()
