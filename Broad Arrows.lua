@@ -97,7 +97,7 @@ local function doFletching()
             end
         else
             API.DoAction_Inventory1(13278,0,1,API.OFF_ACT_GeneralInterface_route)
-            UTILS.randomSleep(20000)
+            UTILS.randomSleep(2000)
         end
     end
 end
