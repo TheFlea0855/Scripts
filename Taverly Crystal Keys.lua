@@ -141,6 +141,7 @@ while (API.Read_LoopyLoop()) do
         elseif findThing(IDs.pikkupstix, 20, 1) then
             print("Trade pikkupstix")
             Interact:NPC("Pikkupstix", "Trade", 20)
+            API.RandomSleep2(2000, 500, 500)
         end
     else
         print("No crystal keys found. Stopping script.")
