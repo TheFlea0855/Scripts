@@ -1,7 +1,7 @@
 --[[
     @name Taverly Crystal Keys
     @author The Flea
-    @version 1
+    @version 1.1
 ]]
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
@@ -10,6 +10,9 @@
 --------------------------------------------------------------------------------------
 
 local API = require("api")
+local bankPin = 1234  -- set bank pin here
+
+Interact:SetSleep(600, 600, 1000)
 
 local IDs = {
     crystalChest = 172,
@@ -19,19 +22,16 @@ local IDs = {
 }
 
 local shopInterface = {InterfaceComp5.new( 1265,7,-1,0 )}
-local chestInterface = {InterfaceComp5.new( 168,0,-1,0)}
+local BankpinInterface = {InterfaceComp5.new(759,5,-1,-1)}
 
-local rewardValueInterface = {
-    InterfaceComp5.new( 168,0,-1,0),
-    InterfaceComp5.new( 168,2,-1,0),
-    InterfaceComp5.new( 168,33,-1,0 ),
-}
+local chestPosition = WPOINT.new(2917, 3451, 0)
 
 local totalLoot = 0
 local keysUsed = 0
 local costPerKey = API.GetExchangePrice(IDs.crystalKey)
 
-MAX_IDLE_TIME_MINUTES = 5
+API.SetMaxIdleTime(6)
+
 startTime, afk = os.time(), os.time()
 
 local function round(val, decimal)
@@ -74,23 +74,6 @@ local function findThing(ID, range, type)
     return false
 end
 
-local function idleCheck()
-    local timeDiff = os.difftime(os.time(), afk)
-    local randomTime = math.random((MAX_IDLE_TIME_MINUTES * 60) * 0.6, (MAX_IDLE_TIME_MINUTES * 60) * 0.9)
-
-    if timeDiff > randomTime then
-        local action = math.random(1, 3)
-        if action == 1 then 
-            API.PIdle1()
-        elseif action == 2 then 
-            API.PIdle2()
-        elseif action == 3 then 
-            API.PIdle22()
-        end
-        afk = os.time()
-    end
-end
-
 local function useShop()
     if isInterfacePresent(shopInterface) then
         print("Buying and selling from the shop")
@@ -105,7 +88,43 @@ local function useShop()
         API.DoAction_Interface(0x24,0xffffffff,1,1265,41,-1,API.OFF_ACT_GeneralInterface_route) --buy tab
         API.RandomSleep2(600, 500, 500)
         API.DoAction_Interface(0xffffffff,0xffffffff,7,1265,20,12,API.OFF_ACT_GeneralInterface_route2) -- buy all
+        API.RandomSleep2(1200, 900, 1300)
+        if isInterfacePresent(BankpinInterface) then
+            API.DoBankPin(bankPin)
+            API.RandomSleep2(600, 500, 500)
+        end
     end
+end
+
+local function readLootFromContainer()
+    local loot = {}
+    local data = API.Container_Get_all(893)
+    for i = 1, #data, 1 do
+        local item = data[i]
+        if(item.item_id > -1) then
+            table.insert(loot,{item.item_id, item.item_stack})
+        end
+    end
+    return loot
+end
+
+local function getTotalLootValue()
+    local totalValue = 0
+    local loot = readLootFromContainer() -- Get the loot table
+    for i = 1, #loot do
+        local item_id = loot[i][1] -- Extract item ID
+        local item_stack = loot[i][2] -- Extract item stack count
+        
+        local item_value
+        if item_id == 995 then
+            item_value = item_stack -- Gold coins, use stack size directly
+        else
+            item_value = API.GetExchangePrice(item_id) * item_stack
+        end
+
+        totalValue = totalValue + item_value -- Add to total value
+    end
+    return totalValue
 end
 
 
@@ -113,18 +132,10 @@ API.Write_LoopyLoop(true)
 while (API.Read_LoopyLoop()) do
     API.DoRandomEvents()
 
-    if isInterfacePresent(chestInterface) then
-        local valueInterface = API.ScanForInterfaceTest2Get(false, rewardValueInterface)
-        local text = valueInterface[1].textids
-        local reward = text:match("(%d[%d,]*)")
-        if reward then    
-            local clean_reward = reward:gsub(",", "")
-            local numeric_reward = tonumber(clean_reward)
-            if numeric_reward then
-                print(numeric_reward) 
-                totalLoot = totalLoot + numeric_reward
-            end
-        end
+    if API.Compare2874Status(18) and API.PInAreaW(chestPosition, 1) then
+        local totalLootValue = getTotalLootValue()
+        totalLoot = totalLoot + totalLootValue
+        print("Total Loot Value: " .. totalLootValue)
         print("click bank all")
         if API.DoAction_Interface(0x24,0xffffffff,1,168,27,-1,API.OFF_ACT_GeneralInterface_route) then -- bank all
             keysUsed = keysUsed + 1
@@ -133,6 +144,10 @@ while (API.Read_LoopyLoop()) do
         if findThing(IDs.crystalChest, 20, 12) then
             print("Have crystal key in inventory. Opening chest.")
             Interact:Object("Crystal chest", "Open", 20)
+            if not API.PInAreaW(chestPosition, 1) then
+                print("Not infront of chest")
+                API.RandomSleep2(1200,300,600)
+            end
         end   
     elseif Inventory:Contains(IDs.notedCrystalKey) then
         if isInterfacePresent(shopInterface) then
@@ -161,8 +176,6 @@ while (API.Read_LoopyLoop()) do
         {"Total Profit:",formatNumber(profit)},
         {"Profit per hour:",formatNumber(profitPH)},
         }
-    API.DrawTable(metrics)
-
-        
-    API.RandomSleep2(600, 1200, 1200)
+    API.DrawTable(metrics)     
+    API.RandomSleep2(600, 600, 1200)
 end
