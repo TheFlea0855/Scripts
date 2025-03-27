@@ -140,7 +140,7 @@ while (API.Read_LoopyLoop()) do
         if API.DoAction_Interface(0x24,0xffffffff,1,168,27,-1,API.OFF_ACT_GeneralInterface_route) then -- bank all
             keysUsed = keysUsed + 1
         end 
-    elseif Inventory:Contains(IDs.crystalKey) then
+    elseif Inventory:Contains({IDs.crystalKey}) then
         if findThing(IDs.crystalChest, 20, 12) then
             print("Have crystal key in inventory. Opening chest.")
             Interact:Object("Crystal chest", "Open", 20)
@@ -149,7 +149,7 @@ while (API.Read_LoopyLoop()) do
                 API.RandomSleep2(1200,300,600)
             end
         end   
-    elseif Inventory:Contains(IDs.notedCrystalKey) then
+    elseif Inventory:Contains({IDs.notedCrystalKey}) then
         if isInterfacePresent(shopInterface) then
             print("Shop open")
             useShop()
