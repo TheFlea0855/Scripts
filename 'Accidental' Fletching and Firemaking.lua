@@ -253,7 +253,7 @@ while (API.Read_LoopyLoop()) do
     API.DoRandomEvents()
     idleCheck()
     applyBoosts()
-    if not API.OpenInventoryInterface2() then
+    if not Inventory:IsOpen() then
         API.KeyboardPress2(inventoryKey, 50, 200)
     end
     if getSelectedTask() == "Seggregation" then
